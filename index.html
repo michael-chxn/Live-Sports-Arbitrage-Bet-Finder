@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Legacy Sports Arb Bot vs Ocular</title>
+  <meta name="description" content="Side-by-side comparison of the legacy Selenium sports arbitrage bot and Michael's Ocular Odds setup.">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090b10;
+      --panel: #111722;
+      --panel-2: #151d2a;
+      --ink: #f5f7fb;
+      --muted: #9aa8ba;
+      --line: #263247;
+      --green: #27d17f;
+      --blue: #5ab7ff;
+      --amber: #ffc45a;
+      --red: #ff6978;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(90, 183, 255, .12), transparent 28rem),
+        radial-gradient(circle at 95% 8%, rgba(39, 209, 127, .10), transparent 26rem),
+        var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    a { color: inherit; }
+
+    .wrap {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 28px 0 18px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--muted);
+      font: 700 12px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+      text-transform: uppercase;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.04);
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--amber);
+      box-shadow: 0 0 18px rgba(255,196,90,.6);
+    }
+
+    h1 {
+      max-width: 940px;
+      margin: 34px 0 18px;
+      font-size: clamp(36px, 8vw, 78px);
+      line-height: .92;
+      letter-spacing: 0;
+    }
+
+    .lede {
+      max-width: 760px;
+      margin: 0;
+      color: #c4ccd8;
+      font-size: clamp(17px, 3.8vw, 22px);
+      line-height: 1.45;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 28px 0 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .btn.primary {
+      background: var(--green);
+      border-color: var(--green);
+      color: #04120b;
+    }
+
+    main {
+      padding: 28px 0 54px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025));
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .card h2, .section h2 {
+      margin: 0 0 12px;
+      font-size: 22px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font: 800 11px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+      text-transform: uppercase;
+    }
+
+    .rows {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      gap: 12px;
+      padding: 11px 0;
+      border-top: 1px solid rgba(255,255,255,.07);
+      color: #d7deea;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .row b {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .status {
+      display: inline-flex;
+      width: fit-content;
+      margin-top: 12px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font: 800 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      text-transform: uppercase;
+    }
+
+    .status.red { color: #ffd9de; background: rgba(255,105,120,.15); }
+    .status.green { color: #d6ffe9; background: rgba(39,209,127,.16); }
+
+    .section {
+      margin-top: 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+
+    .checks {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .check {
+      background: var(--panel-2);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 8px;
+      padding: 14px;
+      min-height: 128px;
+    }
+
+    .check strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--blue);
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+
+    .check p, .card p, .section p {
+      margin: 0;
+      color: #c6d0de;
+      line-height: 1.45;
+    }
+
+    code {
+      color: #dbeafe;
+      background: rgba(90,183,255,.12);
+      border: 1px solid rgba(90,183,255,.22);
+      border-radius: 5px;
+      padding: 2px 5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: .92em;
+    }
+
+    footer {
+      padding: 20px 0 32px;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid rgba(255,255,255,.07);
+    }
+
+    @media (max-width: 760px) {
+      .wrap { width: min(100% - 24px, 1120px); }
+      .topline { align-items: flex-start; flex-direction: column; }
+      h1 { margin-top: 26px; }
+      .grid, .checks { grid-template-columns: 1fr; }
+      .row { grid-template-columns: 1fr; gap: 4px; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="topline">
+        <span>Sports Arb Reference Mirror</span>
+        <span class="badge"><span class="dot"></span> Static Vercel comparison, not a running bot</span>
+      </div>
+      <h1>Legacy Selenium bot vs Ocular Odds.</h1>
+      <p class="lede">This page hosts the comparison surface for the forked upstream repo. The original code is a local Python desktop automation project, so Vercel is used here for review and side-by-side architecture notes, not sportsbook execution.</p>
+      <div class="actions">
+        <a class="btn primary" href="https://personal-sports-arb.vercel.app/dashboard/">Open current Ocular</a>
+        <a class="btn" href="https://github.com/michael-chxn/Live-Sports-Arbitrage-Bet-Finder">Open GitHub fork</a>
+        <a class="btn" href="https://github.com/personal-coding/Live-Sports-Arbitrage-Bet-Finder">Original upstream</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="grid" aria-label="Architecture comparison">
+      <article class="card">
+        <p class="eyebrow">Upstream fork</p>
+        <h2>Live-Sports-Arbitrage-Bet-Finder</h2>
+        <p>All-in-one Selenium scripts that scrape sportsbook pages, calculate arbitrage, select lines, fill bet slips, and include commented submit calls.</p>
+        <span class="status red">Desktop-only reference</span>
+        <div class="rows">
+          <div class="row"><b>Runtime</b><span>Local Python, Tkinter, Chrome, Selenium, undetected-chromedriver.</span></div>
+          <div class="row"><b>Feed</b><span>Direct sportsbook page scraping with hard-coded selectors.</span></div>
+          <div class="row"><b>Execution</b><span>Clicks sportsbook DOM nodes and fills stake inputs in the same process.</span></div>
+          <div class="row"><b>Risk</b><span>Fragile page selectors, detection pressure, optional submit path, no hosted UI.</span></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <p class="eyebrow">Our setup</p>
+        <h2>Ocular Odds mirror</h2>
+        <p>Stable Vercel dashboard backed by our OddsBlaze collector, with execution deliberately split into a downstream verifier/filler.</p>
+        <span class="status green">Live review URL</span>
+        <div class="rows">
+          <div class="row"><b>Runtime</b><span>Vercel dashboard plus local collector/tunnel for feed publishing.</span></div>
+          <div class="row"><b>Feed</b><span>OddsBlaze-backed cards, currently pre-match only and capped at 50 requests/min.</span></div>
+          <div class="row"><b>Execution</b><span>Open/verify sportsbook links first; future BadUSB layer fills slips only after match checks.</span></div>
+          <div class="row"><b>Guardrail</b><span>No bet submission in the dashboard. Final submit remains held.</span></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="section">
+      <p class="eyebrow">What to borrow</p>
+      <h2>Useful pieces from the legacy bot</h2>
+      <div class="checks">
+        <div class="check">
+          <strong>Stake math</strong>
+          <p>Its split calculation and re-price-after-select pattern are useful references for an execution adapter.</p>
+        </div>
+        <div class="check">
+          <strong>Parallel flow</strong>
+          <p>It tries to select both books quickly. Our version should keep that idea but add stronger checkpoints.</p>
+        </div>
+        <div class="check">
+          <strong>Clear-on-change</strong>
+          <p>If selected odds change, clear the betslips and skip. That maps directly to our verifier/filler layer.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="eyebrow">Boundary</p>
+      <h2>What this Vercel deploy does</h2>
+      <p>It gives you a clean phone-friendly reference page and a GitHub fork to inspect. It does not run Selenium, open sportsbook sessions, fill real slips, or submit wagers. The production execution plan stays: <code>Ocular card</code> → <code>open real book links</code> → <code>verify market/side/odds</code> → <code>fill slips</code> → <code>hover/focus near submit</code> → <code>stop</code>.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">Forked from personal-coding/Live-Sports-Arbitrage-Bet-Finder for architecture review. Upstream has no license file as of this mirror.</div>
+  </footer>
+</body>
+</html>
